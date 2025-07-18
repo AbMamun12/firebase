@@ -78,16 +78,16 @@ class _LiveScoreScreenState extends State<LiveScoreScreen> {
             winnerTeam: '',
           );
           // Update
-/*          FirebaseFirestore.instance
+          FirebaseFirestore.instance
               .collection('cricket')
               .doc(cricketScore.matchId)
-              .update(cricketScore.toJson());*/
+              .update(cricketScore.toJson());
 
       // Add
-       FirebaseFirestore.instance
+/*       FirebaseFirestore.instance
            .collection('cricket')
            .doc(cricketScore.matchId)
-         .update(cricketScore.toJson());
+         .update(cricketScore.toJson());*/
         },
         child: const Icon(Icons.add),
       ),
