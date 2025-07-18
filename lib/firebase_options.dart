@@ -21,20 +21,11 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         return windows;
       case TargetPlatform.linux:
@@ -64,6 +55,32 @@ class DefaultFirebaseOptions {
     messagingSenderId: '43346840164',
     projectId: 'flutterapp-19c17',
     authDomain: 'flutterapp-19c17.firebaseapp.com',
+    storageBucket: 'flutterapp-19c17.firebasestorage.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBF0em4AcWZQSUzApDRALh1pzPtPCHicLg',
+    appId: '1:43346840164:ios:b772d7e4976d3b6ac66d71',
+    messagingSenderId: '43346840164',
+    projectId: 'flutterapp-19c17',
+    storageBucket: 'flutterapp-19c17.firebasestorage.app',
+    iosBundleId: 'com.example.firebase',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBF0em4AcWZQSUzApDRALh1pzPtPCHicLg',
+    appId: '1:43346840164:ios:b772d7e4976d3b6ac66d71',
+    messagingSenderId: '43346840164',
+    projectId: 'flutterapp-19c17',
+    storageBucket: 'flutterapp-19c17.firebasestorage.app',
+    iosBundleId: 'com.example.firebase',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyDDpZwaYlluRSWejgPo0Y4TZUTlcnfTLTQ',
+    appId: '1:43346840164:android:71b8ce5258be7327c66d71',
+    messagingSenderId: '43346840164',
+    projectId: 'flutterapp-19c17',
     storageBucket: 'flutterapp-19c17.firebasestorage.app',
   );
 

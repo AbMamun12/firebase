@@ -10,58 +10,86 @@ class LiveScoreScreen extends StatefulWidget {
 }
 
 class _LiveScoreScreenState extends State<LiveScoreScreen> {
-  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  List<CricketScore> _cricketScoreList = [];
-  bool _inProgress = false;
+  final List<CricketScore> _cricketScoreList = [];
 
-  Future<void> _getScoreData() async {
-    _inProgress = true;
-    setState(() {});
+  void _extractData(QuerySnapshot<Map<String, dynamic>>? snapshot) {
     _cricketScoreList.clear();
-    final QuerySnapshot snapshot = await _firebaseFirestore
-        .collection('cricket')
-        .get();
-    for (DocumentSnapshot doc in snapshot.docs) {
+
+    for (DocumentSnapshot doc in snapshot?.docs ?? []) {
       _cricketScoreList.add(
         CricketScore.fromJson(doc.id, doc.data() as Map<String, dynamic>),
       );
     }
-    _inProgress = false;
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _getScoreData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Live Scores')),
-      body: Visibility(
-        visible: _inProgress == false,
-        replacement: Center(child: CircularProgressIndicator()),
-        child: ListView.builder(
-          itemCount: _cricketScoreList.length,
-          itemBuilder: (context, index) {
-            CricketScore cricketScore = _cricketScoreList[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundColor: _indicatorColor(cricketScore.isMatchRunning),
-                radius: 8,
-              ),
-              title: Text(cricketScore.matchId),
-              subtitle: Text(
-                'Team 1:${cricketScore.teamOne}\n Team 2: ${cricketScore.teamTwo}',
-              ),
-              trailing: Text(
-                '${cricketScore.teamOneScore}/${cricketScore.teamTwoScore}',
-              ),
-            );
-          },
-        ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('cricket').snapshots(),
+        builder:
+            (
+              context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot,
+            ) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text(snapshot.error.toString()));
+              }
+              if (snapshot.hasData) {
+                _extractData(snapshot.data);
+                return ListView.builder(
+                  itemCount: _cricketScoreList.length,
+                  itemBuilder: (context, index) {
+                    CricketScore cricketScore = _cricketScoreList[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: _indicatorColor(
+                          cricketScore.isMatchRunning,
+                        ),
+                        radius: 8,
+                      ),
+                      title: Text(cricketScore.matchId),
+                      subtitle: Text(
+                        'Team 1:${cricketScore.teamOneName}\n Team 2: ${cricketScore.teamTwoName}\nWinner: ${cricketScore.winnerTeam == '' ? 'Pending' : cricketScore.winnerTeam}',
+                      ),
+                      trailing: Text(
+                        '${cricketScore.teamOneScore}/${cricketScore.teamTwoScore}',
+                      ),
+                    );
+                  },
+                );
+              }
+              return const SizedBox();
+            },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          CricketScore cricketScore = CricketScore(
+            matchId: 'IndvsAUS',
+            teamOneName: 'India',
+            teamTwoName: 'Australia',
+            teamOneScore: 200,
+            teamTwoScore: 220,
+            isMatchRunning: true,
+            winnerTeam: '',
+          );
+          // Update
+/*          FirebaseFirestore.instance
+              .collection('cricket')
+              .doc(cricketScore.matchId)
+              .update(cricketScore.toJson());*/
+
+      // Add
+       FirebaseFirestore.instance
+           .collection('cricket')
+           .doc(cricketScore.matchId)
+         .update(cricketScore.toJson());
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
